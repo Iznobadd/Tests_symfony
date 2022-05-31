@@ -2,12 +2,45 @@
 
 namespace App\Tests;
 
+use App\Entity\FoodTVA;
 use PHPUnit\Framework\TestCase;
 
 class UnitTest extends TestCase
 {
-    public function testSomething(): void
+    /**
+     * @dataProvider pricesTVA
+     */
+    public function testTVA($price, $expectedTVA): void
     {
-        $this->assertTrue(true);
+        $foodWithTVA = new FoodTVA("Product", FoodTVA::FOOD_PRODUCT, $price);
+        $this->assertSame($expectedTVA, $foodWithTVA->computeTVA());
+
+    }
+
+    public function pricesTVA()
+    {
+        return [
+            [0, 0.0],
+            [20, 1.1],
+            [100, 5.5]
+        ];
+    }
+
+    /**
+     * @dataProvider pricesWithoutTVA
+     */
+    public function testWithoutTVA($price, $expectedTVA): void
+    {
+        $foodWithoutTVA = new FoodTVA("Product", "no food", $price);
+        $this->assertSame($expectedTVA, $foodWithoutTVA->computeTVA());
+    }
+
+    public function pricesWithoutTVA()
+    {
+        return [
+          [0, 0.0],
+          [20, 3.92],
+            [100, 19.6]
+        ];
     }
 }
